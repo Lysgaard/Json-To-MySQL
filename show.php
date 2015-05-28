@@ -68,7 +68,7 @@ if(!empty($update))
 			$sql = "SELECT * FROM flightlog,flightlog_details WHERE flightlog.flight_id  = flightlog_details.flight_id AND flight_date  >= '".$_POST['from']."' and flight_date <= '".$_POST['to']."' and glider = 'OY-HLX'   ";
 		}
 		
-		echo $sql;
+	
 
 		$result = mysql_query($sql);
 		$total_hour = 0;
