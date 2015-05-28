@@ -1,6 +1,8 @@
 <html>
 <head>
-<link href="style.css" rel="stylesheet" type="text/css" />
+<link href="css/style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery-latest.js"></script> 
+<script type="text/javascript" src="js/__jquery.tablesorter.min.js"></script> 
 </head>
 <body>
 <?php
@@ -32,112 +34,42 @@ if(!empty($update))
 	print '<form action="show.php" method="post" >';
 	print '<table border="1px solid black">';
 		print '<tr>';
-			print '<td>Select Year</td>';
+			print '<td>*Date from</td>';
 			print '<td>';
-				print '<select name="year" >';
-					for($i=2000;$i<= date('Y');$i++)
-					if(!empty($year))
-					{
-						if($year == $i)
-							print '<option value="'.$i.'" selected="selected">'.$i.'</option>';
-						else
-							print '<option value="'.$i.'">'.$i.'</option>';	
-					}
-					else
-						print '<option value="'.$i.'">'.$i.'</option>';	
-						
-				print '</select>';
-			print '</td>';
-			print '<td>Select Month</td>';
+				print '<input type = "date" name = "from">';
+			print '</td>';		
+			print '<td>*Date to</td>';
 			print '<td>';
-				print '<select name="month" >';
-					if(!empty($month))
-					{
-						if($month == '01')
-							print '<option value="01" selected="selected">January</option>';
-						else
-							print '<option value="01">January</option>';
-								
-						if($month == '02')
-							print '<option value="02" selected="selected">February</option>';
-						else
-							print '<option value="02">February</option>';
-								
-						if($month == '03')
-							print '<option value="03" selected="selected">March</option>';
-						else
-							print '<option value="03">March</option>';
-							
-						if($month == '04')
-							print '<option value="04" selected="selected">April</option>';
-						else
-							print '<option value="04">April</option>';
-								
-						if($month == '05')
-							print '<option value="05" selected="selected">May</option>';
-						else
-							print '<option value="05">May</option>';
-								
-						if($month == '06')
-							print '<option value="06" selected="selected">June</option>';
-						else
-							print '<option value="06">June</option>';
-								
-						if($month == '07')
-							print '<option value="07" selected="selected">July</option>';
-						else
-							print '<option value="07">July</option>';
-								
-						if($month == '08')
-							print '<option value="08" selected="selected">August</option>';
-						else
-							print '<option value="08">August</option>';
-								
-						if($month == '09')
-							print '<option value="09" selected="selected">September</option>';
-						else
-							print '<option value="09">September</option>';
-								
-						if($month == '10')
-							print '<option value="10" selected="selected">October</option>';
-						else
-							print '<option value="10">October</option>';	
-							
-						if($month == '11')
-							print '<option value="11" selected="selected">November</option>';
-						else
-							print '<option value="11">November</option>';
-								
-						if($month == '12')
-							print '<option value="12" selected="selected">December</option>';
-						else
-							print '<option value="12">December</option>';
-					}
-					else
-					{
-						print '<option value="01">January</option>';
-						print '<option value="02">February</option>';
-						print '<option value="03">March</option>';
-						print '<option value="04">April</option>';
-						print '<option value="05">May</option>';
-						print '<option value="06">June</option>';
-						print '<option value="07">July</option>';
-						print '<option value="08">August</option>';
-						print '<option value="09">September</option>';
-						print '<option value="10">October</option>';	
-						print '<option value="11">November</option>';
-						print '<option value="12">December</option>';	
-					}
-				print '</select>';
+				print '<input type = "date" name = "to">';
 			print '</td>';
-			print '<td><input type="submit" name="search" value="Search"></td>';
+		
+			print '<td>Registration:</td>';
+			print '<td>';
+				print '<input type = "text" style = "width:100px" name = "registration">';
+			print '</td>';
+			print '<td><input type="submit" name="search" value="Filter"></td>';
 		print '</tr>';
 	print '</table>';
 	print '</form>';
 	if(!empty($_POST['search']))
 	{
 		
-		$sql = "SELECT * FROM flightlog,flightlog_details WHERE flightlog.flight_id  = flightlog_details.flight_id AND flight_date like '$year-$month-%'  ";
+		if(empty($_POST['from'] && empty($_POST['to'] && empty($_POST['registration']  )))){
+			$sql = "SELECT * FROM flightlog,flightlog_details WHERE flightlog.flight_id  = flightlog_details.flight_id";
+		
+
+		}
+		if(!empty($_POST['registration'])){
+		
+				$sql = "SELECT * FROM flightlog,flightlog_details WHERE flightlog.flight_id  = flightlog_details.flight_id  and glider = '".$_POST['registration']."'  ";
+			
+		}
+		if(!empty($_POST['from'] && !empty($_POST['to'] && !empty($_POST['registration'])))){
+			$sql = "SELECT * FROM flightlog,flightlog_details WHERE flightlog.flight_id  = flightlog_details.flight_id AND flight_date  >= '".$_POST['from']."' and flight_date <= '".$_POST['to']."' and glider = 'OY-HLX'   ";
+		}
+		
+	
+
 		$result = mysql_query($sql);
 		$total_hour = 0;
 		$total_min = 0;
@@ -154,27 +86,29 @@ if(!empty($update))
 		print '<h3>Total Gliding Time : '.$total_hour.'h'.$total_min.'</h3>';
 	
 	}	
-	print '<table border="1px solid black">';
+	print '<table id = "myTable" border="1px solid black">';
+	print '<thead>';
 		print '<tr>';
-				print '<td>Date</td>';
-				print '<td>Plane</td>';
-				print '<td>Glider</td>';
-				print '<td>Takeoff</td>';
-				print '<td>Plane Landing</td>';
-				print '<td>Glider Landing</td>';
-				print '<td>Plane Time</td>';
-				print '<td>Glider Time</td>';
-				print '<td>Towplane Max Alt</td>';
-				print '<td>Pilot</td>';
-				print '<td>Comments</td>';
-				print '<td>Edit</td>';
+				print '<th>Date</td>';
+				print '<th>Plane</td>';
+				print '<th>Glider</td>';
+				print '<th>Takeoff</td>';
+				print '<th>Plane Landing</td>';
+				print '<th>Glider Landing</td>';
+				print '<th>Plane Time</td>';
+				print '<th>Glider Time</td>';
+				print '<th>Towplane Max Alt</td>';
+				print '<th>Pilot</td>';
+				print '<th>Comments</td>';
+				print '<th>Edit</td>';
 				
 			print '</tr>';
+			print '</thead>';
 	
 	$sql = "SELECT * FROM flightlog ";
 	if(!empty($_POST['search']))
 	{
-		$sql .= " WHERE  flight_date like '$year-$month-%'  ";
+		$sql .= " WHERE  flight_date >=  0 ";
 	}
 	$sql .= ' ORDER BY flight_date DESC ';
 			
@@ -183,7 +117,13 @@ if(!empty($update))
 	while($row = mysql_fetch_object($result)) 
 	{
 		//print "SELECT * FROM flightlog_details WHERE flight_id = '$flight_id' <br> ";
-		$result_det = mysql_query("SELECT * FROM flightlog_details WHERE flight_id = '$row->flight_id' ");
+
+		if(!empty($_POST['registration'])){
+			$result_det = mysql_query("SELECT * FROM flightlog_details WHERE flight_id = '$row->flight_id' and glider = '".$_POST['registration']."' ");
+		}
+		else{
+			$result_det = mysql_query("SELECT * FROM flightlog_details WHERE flight_id = '$row->flight_id'");
+		}
 		
 		/*print '<table border="1px solid black">';
 			print '<tr>';
@@ -221,6 +161,13 @@ if(!empty($update))
 	
 	
 ?>
-
+<script type="text/javascript">
+$(document).ready(function() 
+    { 
+        $("#myTable").tablesorter( {sortList: [[0,0], [1,0]]} ); 
+    } 
+); 
+    
+</script>
 </body>
 </html>
