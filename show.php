@@ -1,32 +1,36 @@
 <html>
 <head>
 <link href="css/style.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="js/__jquery.tablesorter.min.js"></script> 
+
+
   <link rel="stylesheet" href="css/jquery-ui.css">
   <script src="js/jquery-1.10.2.js"></script>
   <script src="js/jquery-ui.js"></script>
+  <script type="text/javascript" src="js/__jquery.tablesorter.min.js"></script> 
 </head>
 <body>
 	<?php 
-		error_reporting(E_ALL ^ E_DEPRECATED);
-		set_time_limit(0);
-		include('config.php');
-		extract($_POST);	
+	error_reporting(E_ALL ^ E_DEPRECATED);
+	set_time_limit(0);
+
+	include('config.php');
+	extract($_POST);	
+
 	?>
 	<script type="text/javascript">
-  	$(function() {
-	    var availableTags = [
-		<?php $sql = "SELECT * FROM flightlog,flightlog_details WHERE flightlog.flight_id = flightlog_details.flight_id group by glider";
-		$result = mysql_query($sql);
-		while($row = mysql_fetch_object($result))
-		{
-			 echo '"'.$row->glider.'",';
-		} ?>
-		];
-		$( "#reg" ).autocomplete({
-		source: availableTags
-		});
-		});
+  $(function() {
+    var availableTags = [
+	<?php $sql = "SELECT * FROM flightlog,flightlog_details WHERE flightlog.flight_id = flightlog_details.flight_id group by glider";
+	$result = mysql_query($sql);
+	while($row = mysql_fetch_object($result))
+	{
+		 echo '"'.$row->glider.'",';
+	} ?>
+	];
+	$( "#reg" ).autocomplete({
+	source: availableTags
+	});
+	});
 	</script>
 	<?php
 
@@ -55,8 +59,7 @@ if(!empty($update))
 		$from = "";
 		$to = "";
 	}
-
-	if(isset($_POST["registration"])){
+	if(isset($_POST['registration'])){
 		$reg = $_POST["registration"];
 	}
 	else{
@@ -198,7 +201,6 @@ if(!empty($update))
 	print '</table>';
 	print '</div>';
 	print '</div>';
-	
 	
 ?>
 <script type="text/javascript">
