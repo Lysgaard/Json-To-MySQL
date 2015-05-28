@@ -1,15 +1,35 @@
 <html>
 <head>
 <link href="css/style.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="js/jquery-latest.js"></script> 
 <script type="text/javascript" src="js/__jquery.tablesorter.min.js"></script> 
+  <link rel="stylesheet" href="css/jquery-ui.css">
+  <script src="js/jquery-1.10.2.js"></script>
+  <script src="js/jquery-ui.js"></script>
 </head>
 <body>
-<?php
-error_reporting(E_ALL ^ E_DEPRECATED);
-set_time_limit(0);
-include('config.php');
-extract($_POST);	
+	<?php 
+		error_reporting(E_ALL ^ E_DEPRECATED);
+		set_time_limit(0);
+		include('config.php');
+		extract($_POST);	
+	?>
+	<script type="text/javascript">
+  	$(function() {
+	    var availableTags = [
+		<?php $sql = "SELECT * FROM flightlog,flightlog_details WHERE flightlog.flight_id = flightlog_details.flight_id group by glider";
+		$result = mysql_query($sql);
+		while($row = mysql_fetch_object($result))
+		{
+			 echo '"'.$row->glider.'",';
+		} ?>
+		];
+		$( "#reg" ).autocomplete({
+		source: availableTags
+		});
+		});
+	</script>
+	<?php
+
 
 if(!empty($update))
 {
@@ -27,7 +47,18 @@ if(!empty($update))
 	WHERE id = '$id'
 	 ");	
 }
-	
+	if(isset($_POST["from"]) || isset($_POST["to"])){
+		$from = $_POST["from"];
+		$to = $_POST["to"];
+	}
+	else{
+		$from = "";
+		$to = "";
+	}
+	if(isset($_POST["registration"])){
+		$reg = $_POST["registration"];
+	}
+
 	print '<div style="width:100%" align="center">';
 	print '<div style="border:2px solid black;width:850px;padding-top:20px;padding-bottom:20px;" align="center" >';
 	
@@ -36,16 +67,16 @@ if(!empty($update))
 		print '<tr>';
 			print '<td>*Date from</td>';
 			print '<td>';
-				print '<input type = "date" name = "from">';
+				print "<input type = 'date' value = '$from' name = 'from'>";
 			print '</td>';		
 			print '<td>*Date to</td>';
 			print '<td>';
-				print '<input type = "date" name = "to">';
+				print "<input type = 'date' name = 'to' value = '$to'>";
 			print '</td>';
 		
 			print '<td>Registration:</td>';
 			print '<td>';
-				print '<input type = "text" style = "width:100px" name = "registration">';
+				print "<input id = 'reg' style = 'width:100px' value = '$registration' name = 'registration'>";
 			print '</td>';
 			print '<td><input type="submit" name="search" value="Filter"></td>';
 		print '</tr>';
@@ -65,10 +96,10 @@ if(!empty($update))
 			
 		}
 		if(!empty($_POST['from'] && !empty($_POST['to'] && !empty($_POST['registration'])))){
-			$sql = "SELECT * FROM flightlog,flightlog_details WHERE flightlog.flight_id  = flightlog_details.flight_id AND flight_date  >= '".$_POST['from']."' and flight_date <= '".$_POST['to']."' and glider = 'OY-HLX'   ";
+			$sql = "SELECT * FROM flightlog,flightlog_details WHERE flightlog.flight_id  = flightlog_details.flight_id AND flight_date  >= '".$_POST['from']."' and flight_date <= '".$_POST['to']."' and glider = '".$_POST['registration']."'   ";
 		}
 		
-	
+		
 
 		$result = mysql_query($sql);
 		$total_hour = 0;
@@ -105,21 +136,26 @@ if(!empty($update))
 			print '</tr>';
 			print '</thead>';
 	
-	$sql = "SELECT * FROM flightlog ";
+	$sql = "SELECT * FROM flightlog  ";
 	if(!empty($_POST['search']))
 	{
-		$sql .= " WHERE  flight_date >=  0 ";
+		if(!empty($_POST['from'] && !empty($_POST['to']))){
+			$sql .= " WHERE  flight_date  >= '".$_POST['from']."' and flight_date <= '".$_POST['to']."' ";
+		}
+		else{
+			$sql = "SELECT * FROM flightlog  ";
+		}
 	}
 	$sql .= ' ORDER BY flight_date DESC ';
 			
 	$result = mysql_query($sql);
-	//print $sql;
+	
 	while($row = mysql_fetch_object($result)) 
 	{
 		//print "SELECT * FROM flightlog_details WHERE flight_id = '$flight_id' <br> ";
 
 		if(!empty($_POST['registration'])){
-			$result_det = mysql_query("SELECT * FROM flightlog_details WHERE flight_id = '$row->flight_id' and glider = '".$_POST['registration']."' ");
+			$result_det = mysql_query("SELECT * FROM flightlog_details WHERE flight_id = '$row->flight_id'  and glider = '".$_POST['registration']."' ");
 		}
 		else{
 			$result_det = mysql_query("SELECT * FROM flightlog_details WHERE flight_id = '$row->flight_id'");
@@ -164,7 +200,7 @@ if(!empty($update))
 <script type="text/javascript">
 $(document).ready(function() 
     { 
-        $("#myTable").tablesorter( {sortList: [[0,0], [1,0]]} ); 
+        $("#myTable").tablesorter(); 
     } 
 ); 
     
