@@ -55,8 +55,12 @@ if(!empty($update))
 		$from = "";
 		$to = "";
 	}
+
 	if(isset($_POST["registration"])){
 		$reg = $_POST["registration"];
+	}
+	else{
+		$reg = "";
 	}
 
 	print '<div style="width:100%" align="center">';
@@ -76,7 +80,7 @@ if(!empty($update))
 		
 			print '<td>Registration:</td>';
 			print '<td>';
-				print "<input id = 'reg' style = 'width:100px' value = '$registration' name = 'registration'>";
+				print "<input id = 'reg' style = 'width:100px' value = '$reg' name = 'registration'>";
 			print '</td>';
 			print '<td><input type="submit" name="search" value="Filter"></td>';
 		print '</tr>';
