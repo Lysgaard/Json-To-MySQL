@@ -3,7 +3,7 @@
 $host = "localhost";
 $mysql_user = "root";
 $mysql_password = "";
-$mysql_db = "flight";
+$mysql_db = "flarm";
 
 
 //make connection with mysql and select the database
