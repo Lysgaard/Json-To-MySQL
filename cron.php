@@ -15,7 +15,8 @@ include('config.php');
 	//BY THIS QUERY YOU CAN IMPORT CURRENT DATE DATA
 	
 	$current_date = date("dmY");
-	$date = date('Y-m-d');
+	$date = date('m-d-Y');
+	echo $current_date;
 	$query = "http://live.glidernet.org/flightlog/index.php?a=EKLV&s=QFE&u=M&z=2&p=&d=$current_date&j";
 	
 		
